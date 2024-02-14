@@ -1,0 +1,23 @@
+stacks:
+  - name: alice
+    qdevice_typ: generic
+    qdevice_cfg:
+      num_qubits: 20
+  - name: bob
+    qdevice_typ: generic
+    qdevice_cfg:
+      num_qubits: 20
+
+links:
+  - stack1: alice
+    stack2: bob
+    typ: perfect
+    cfg:
+      state_delay: 1000
+
+clinks:
+  - stack1: alice
+    stack2: bob
+    typ: default
+    cfg:
+      delay: 100

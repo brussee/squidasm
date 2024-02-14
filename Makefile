@@ -1,3 +1,4 @@
+include make.env
 PYTHON3        = python3
 SOURCEDIR      = squidasm
 TESTDIR        = tests
