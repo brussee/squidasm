@@ -30,12 +30,26 @@ class ProgramA(Program):
         c_peer = ctx.csockets[self._peer_id]
         epr_peer = ctx.epr_sockets[self._peer_id]
 
+        ###
+
+        q1 = Qubit(qnpu)
+        q2 = Qubit(qnpu)
+        q1.H()
+        q1.cnot(target=q2)
+        m1 = q1.measure()
+        m2 = q2.measure()
+        subroutine = qnpu.compile()
+        yield from qnpu.commit_subroutine(subroutine)
+        m1 = int(m1)
+        m2 = int(m2)
+        self._logger.info(f"m1={m1}, m2={m2}")
+
+        ###
+
         req_nr_of_pairs = 1
         msg = f"epr_request:{req_nr_of_pairs}"
         self._logger.info(f"Sending message: {msg}")
         c_peer.send(msg)
-
-        ###
 
         epr_pairs = epr_peer.recv_keep(number=req_nr_of_pairs)
         measurements = [qubit.measure() for qubit in epr_pairs]

@@ -30,6 +30,11 @@ class ProgramB(Program):
         c_peer = ctx.csockets[self._peer_id]
         epr_peer = ctx.epr_sockets[self._peer_id]
 
+        ###
+
+
+        ###
+
         msg: str = yield from c_peer.recv()
         self._logger.info(f"Received message: {msg}")
 
