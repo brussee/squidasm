@@ -14,6 +14,7 @@ class ProgramB(Program):
         self._my_id = my_id
         self._peer_id = peer_id
         self._logger = logging.getLogger(name=self.meta.name)
+        self._logger.setLevel('INFO')
 
     @property
     def meta(self) -> ProgramMeta:
@@ -24,11 +25,24 @@ class ProgramB(Program):
             max_qubits=20,
         )
 
-    def run(self, context: ProgramContext):
-        peer = context.csockets[self._peer_id]
+    def run(self, ctx: ProgramContext):
+        qnpu = ctx.connection
+        c_peer = ctx.csockets[self._peer_id]
+        epr_peer = ctx.epr_sockets[self._peer_id]
 
-        msg = yield from peer.recv()
+        msg: str = yield from c_peer.recv()
         self._logger.info(f"Received message: {msg}")
+
+        cmd, args = msg.split(sep=':', maxsplit=1)
+        argv = args.split(sep=',')
+
+        if cmd == 'epr_request':
+            qubits = epr_peer.create_keep(number=int(argv[0]))
+            self._logger.info(f"Created {len(qubits)} EPR pairs on request")
+
+            measurements = [qubit.measure() for qubit in qubits]
+            yield from qnpu.flush()
+            self._logger.info(measurements)
 
         # TODO
         return {}

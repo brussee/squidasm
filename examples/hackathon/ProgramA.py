@@ -14,6 +14,7 @@ class ProgramA(Program):
         self._my_id = my_id
         self._peer_id = peer_id
         self._logger = logging.getLogger(name=self.meta.name)
+        self._logger.setLevel('INFO')
 
     @property
     def meta(self) -> ProgramMeta:
@@ -24,12 +25,22 @@ class ProgramA(Program):
             max_qubits=20,
         )
 
-    def run(self, context: ProgramContext):
-        peer = context.csockets[self._peer_id]
+    def run(self, ctx: ProgramContext):
+        qnpu = ctx.connection
+        c_peer = ctx.csockets[self._peer_id]
+        epr_peer = ctx.epr_sockets[self._peer_id]
 
-        msg = f"Hello from {self._my_id}"
+        req_nr_of_pairs = 1
+        msg = f"epr_request:{req_nr_of_pairs}"
         self._logger.info(f"Sending message: {msg}")
-        peer.send(msg)
+        c_peer.send(msg)
+
+        ###
+
+        epr_pairs = epr_peer.recv_keep(number=req_nr_of_pairs)
+        measurements = [qubit.measure() for qubit in epr_pairs]
+        yield from qnpu.flush()
+        self._logger.info(measurements)
 
         # TODO
         return {}

@@ -8,7 +8,7 @@ from ProgramA import ProgramA
 from ProgramB import ProgramB
 
 
-def configure_logging(default_level: str = 'INFO') -> None:
+def configure_logging(default_level: str = 'WARN') -> None:
     logging.basicConfig(
         level=os.environ.get('LOGLEVEL', default_level).upper(),
     )
