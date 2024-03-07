@@ -14,5 +14,5 @@ htmlcov/
 .idea/*
 .python-version
 .vscode/*
-.venv
-venv
+.venv*/
+venv/
